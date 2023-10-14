@@ -38,3 +38,33 @@ input[type="file"]::file-selector-button {
   border-radius: 6px;
   border:#5a5a5f solid 1px;
 }
+
+.homepage {
+  background-image: url('/background.png');
+  background-repeat: no-repeat;
+  background-size: 40%;
+  z-index: 5
+}
+
+.homepage-two {
+  z-index: -1 !important;
+}
+
+.presets-div {
+  z-index: 10 !important;
+}
+
+.icon-bg {
+  width: 54px;
+  height: 54px;
+  padding: 12px;
+  background-color: #D9D9D959;
+  border: 1px solid #e0dfdf59;
+  border-radius: 8px;
+  transform: rotate(45deg);
+  margin: 20px 0;
+}
+
+.icon-fg {
+  transform: rotate(-45deg) !important;
+}

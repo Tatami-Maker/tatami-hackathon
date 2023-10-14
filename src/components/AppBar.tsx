@@ -9,7 +9,7 @@ import Image from 'next/image';
 
 const WalletMultiButtonDynamic = dynamic(
   async () => (await import('@solana/wallet-adapter-react-ui')).WalletMultiButton,
-  { ssr: false }
+  { ssr: false },
 );
 
 export const AppBar: React.FC = () => {
@@ -23,7 +23,7 @@ export const AppBar: React.FC = () => {
           <Image src="/logo.png" alt="logo" width={28} height={28} className="hidden sm:inline-flex lg:ml-40"/>
           <div className="hidden sm:inline w-22 h-22 md:p-2">
             <Link href="/" className="text-secondary hover:text-white flex flex-row gap-2">
-              <h1 className='text-2xl font-bold text-white'>tatami</h1>
+              <h1 className='text-2xl font-bold text-white'>Tatami</h1>
             </Link>
           </div>
           <WalletMultiButtonDynamic className="
@@ -31,18 +31,15 @@ export const AppBar: React.FC = () => {
           <div className="hidden md:inline-flex align-items-center justify-items gap-12 ml-12">
             <NavElement
               label="Create Token"
-              href="/create"
-              navigationStarts={() => setIsNavOpen(true)}
+              href="/create/?type=7"
             />
             <NavElement
               label="Shop"
               href="/"
-              navigationStarts={() => setIsNavOpen(false)}
             />
             <NavElement
               label="Learn"
               href="/"
-              navigationStarts={() => setIsNavOpen(false)}
             />
         </div>
         </div>

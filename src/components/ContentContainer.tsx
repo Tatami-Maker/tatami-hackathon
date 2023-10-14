@@ -25,7 +25,7 @@ export const ContentContainer: React.FC<Props> = ({ children }) => {
           <li>
             <NavElement
               label="Create Token"
-              href="/create"
+              href="/create/?type=7"
             />
           </li>
           <li>

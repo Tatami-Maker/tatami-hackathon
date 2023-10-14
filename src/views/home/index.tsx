@@ -3,36 +3,21 @@ import { FC, useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
-// Wallet
-import { useWallet, useConnection } from '@solana/wallet-adapter-react';
-
-// Components
-import { RequestAirdrop } from '../../components/RequestAirdrop';
-import pkg from '../../../package.json';
-
 // Store
 import useUserSOLBalanceStore from '../../stores/useUserSOLBalanceStore';
 import PresetBox from 'components/PresetBox';
 
 export const HomeView: FC = ({ }) => {
-  const wallet = useWallet();
-  const { connection } = useConnection();
-
-  const balance = useUserSOLBalanceStore((s) => s.balance)
-  const { getUserSOLBalance } = useUserSOLBalanceStore()
-
-  useEffect(() => {
-    if (wallet.publicKey) {
-      console.log(wallet.publicKey.toBase58())
-      getUserSOLBalance(wallet.publicKey, connection)
-    }
-  }, [wallet.publicKey, connection, getUserSOLBalance])
-
   return (
-
-    <div className="md:hero mx-auto py-4">
-      <div className="md:hero-content flex flex-col">
-        <div className='mt-4'>
+    <div className="w-full md:grid place-items-center row-start-1 col-start-1 mx-auto homepage-main">
+      <div className="hidden md:inline-block z-0 absolute top-[108px] -left-8 w-1/2 h-3/4 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-[#712E4B] via-transparent to-transparent"></div>
+      <div className="hidden md:block absolute top-[64px] w-full h-2/3 z-0 homepage"></div>
+      {/* <div className="hidden md:block w-full absolute bottom-0">
+        <Image src="/background_blue.png" className='relative left-[60%] w-2/5 homepage-two'
+        alt='bg' width={0} height={0}  />
+      </div> */}
+      <div className="md:hero-content flex flex-col presets-div">
+        <div className='mt-4 flex flex-row gap-4 items-center justify-center'>
         <p className="flex flex-col items-center">
           <Image
             src="/logo.png"
@@ -41,51 +26,55 @@ export const HomeView: FC = ({ }) => {
             height={60}
           />
         </p>
-        <h1 className="text-center text-4xl font-bold mt-3">
-          tatami
+        <h1 className="text-center text-4xl font-bold">
+          Tatami
         </h1>
-        <p className="text-center text-slate-400 my-2">
+        </div>
+        <p className="text-center text-slate-400 mt-4 md:mt-0 mb-4">
           The Complete Token Launch Suite
         </p>
-        </div>
-        <div className='grid grid-rows-6 md:grid-rows-2 grid-flow-col md:gap-8'>
+        <div className='grid grid-rows-6 md:grid-rows-3 lg:grid-rows-2 grid-flow-col md:gap-8'>
         <PresetBox 
-          title='High Degen'
-          desc={["10% to DAO Treasury","2% to Team Wallets as tokens",
-          "88% as tokens to CSV with community wallet"]}
-          price={3}
-        />
-        <PresetBox 
-          title='Semi-Degen'
-          desc={["20% to DAO Treasury","3% to Team Wallets as tokens",
-          "77% as tokens to CSV with community wallet"]}
-          price={3}
-        />
-        <PresetBox 
-          title='Non-Degen'
-          desc={["30% to DAO Treasury","55% to community wallets", "5% to Team Wallets as tokens",
-          "10% as options to community"]}
+          title='Investment DAO'
+          desc={["2% alloted to the Team", "98% allocated to DAO treasury",
+          "DAO governed by investors"]}
           price={2}
+          type={2}
         />
         <PresetBox 
-          title='DAO Template'
-          desc={["90% to DAO Treasury","5% to Team Wallets as tokens",
-          "5% as options to team wallets"]}
+          title='Common Interest DAO'
+          desc={["The fixed supply of 100 tokens", "1 allocated to each address",
+          "DAO governed by the holders"]}
           price={3}
+          type={5}
         />
         <PresetBox 
-          title='Degen Token'
-          desc={["35% to DAO Treasury","2.5% to Team Wallets as tokens",
-          "2.5% as options to Team Wallets",
-          "10% to community as options",
-          "50% into the liquidity pool"]}
+          title='Early Stage DAO'
+          desc={["100% allocated to the Team",
+          "Team decides the DAO's direction",
+          "Team issues further tokens"]}
           price={3}
+          type={3}
         />
         <PresetBox 
-          title='DAO'
-          desc={["90% to DAO Treasury","5% to Team Wallets as tokens",
-          "5% as options to team wallets"]}
+          title='Crowdsource Token'
+          desc={["1% Options allocated to Team", "99% Options allocated to AllStars",
+          "DAO governed by holders"]}
           price={3}
+          type={1}
+        />
+        <PresetBox 
+          title='Memecoin'
+          desc={["89% allocated to the Allstar list", "10% added in the liquidity pool",
+          "1% allocated to the team"]}
+          price={3}
+          type={4}
+        />
+        <PresetBox 
+          title='Your Preset?'
+          desc={["Didn't find the suitable preset?", "Create your own tokenomics","coming soon on Tatami"]}
+          price={3}
+          type={6}
         />
         </div>
       </div>

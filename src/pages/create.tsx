@@ -2,11 +2,11 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import { CreateView } from "../views";
 
-const Basics: NextPage = (props) => {
+const Basics: NextPage = () => {
   return (
     <div>
       <Head>
-        <title>Solana Scaffold</title>
+        <title>Create Token</title>
         <meta
           name="description"
           content="Basic Functionality"
