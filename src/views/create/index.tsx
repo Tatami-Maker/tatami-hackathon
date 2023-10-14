@@ -34,11 +34,11 @@ export const CreateView: FC = ({ }) => {
         :
         page === 1 ?
         <Review img={img} tokenName={tokenName} tokenSymbol={tokenSymbol} 
-          tokenSupply={type === 5 ? 100 : tokenSupply} setPage={setPage}/>
+          tokenSupply={type === 5 ? 100 : tokenSupply} setPage={setPage} type={type} />
         :
         <Launch setAddresses={setAddresses} addresses={addresses} setMembers={setMembers} members={members}
          tokenName={tokenName} tokenSymbol={tokenSymbol} setPage={setPage} tokenSupply={tokenSupply}
-         publicKey={wallet.publicKey.toBase58()}/>
+         publicKey={wallet.publicKey.toBase58()} type={type} />
       }
     </div>
   )

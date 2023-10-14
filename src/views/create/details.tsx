@@ -18,7 +18,7 @@ type Props = {
     tokenSupply: number
 }
 
-const TokenDetails: FC = ({setImage, setTokenName, setTokenSymbol, setTokenSupply, setPage, type, tokenSupply}: Props) => {
+const TokenDetails: FC<Props> = ({setImage, setTokenName, setTokenSymbol, setTokenSupply, setPage, type, tokenSupply}: Props) => {
   const router = useRouter();
 
   if (type) {

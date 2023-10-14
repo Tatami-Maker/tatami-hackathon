@@ -10,10 +10,11 @@ type Props = {
     tokenName: string,
     tokenSymbol: string,
     setPage: any,
-    tokenSupply: number
+    tokenSupply: number,
+    type: number
 }
 
-const Review: FC = ({img, tokenName, tokenSymbol, tokenSupply, setPage}: Props) => {
+const Review: FC<Props> = ({img, tokenName, tokenSymbol, tokenSupply, setPage, type}: Props) => {
     return (
         <div className="flex flex-col md:flex-row w-full mt-8">
           <div className="hidden md:inline-block z-0 absolute top-[108px] -left-8 w-1/2 h-3/4 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-[#712E4B] via-transparent to-transparent"></div>
@@ -65,7 +66,7 @@ const Review: FC = ({img, tokenName, tokenSymbol, tokenSupply, setPage}: Props) 
                 </div>
             </div>
           </div>
-          <CreateSidebar level={2}/>
+          <CreateSidebar level={2} type={type}/>
         </div>
     );
 }

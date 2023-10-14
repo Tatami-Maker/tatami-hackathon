@@ -17,11 +17,12 @@ type Props = {
   tokenSymbol: string;
   setPage: any;
   publicKey: string;
-  tokenSupply: number
+  tokenSupply: number;
+  type: number
 }
 
-const Launch: FC = (
-  {setAddresses, addresses, members, setMembers, tokenName, tokenSymbol, setPage, publicKey, tokenSupply}: Props
+const Launch: FC<Props> = (
+  {setAddresses, addresses, members, setMembers, tokenName, tokenSymbol, setPage, publicKey, tokenSupply, type}: Props
 ) => {
   const [currentAddress, setCurrentAddress] = useState<string>();
   const [currentMember, setCurrentMember] = useState<string>();
@@ -174,7 +175,7 @@ const Launch: FC = (
             </div>
           </div>
         </div>
-        <CreateSidebar level={3} />
+        <CreateSidebar level={3} type={type}/>
       </div>
   );
 }
