@@ -10,7 +10,7 @@ type Props = {
     token: Tokens
 }
 
-export const TokenView: FC = ({token}: Props) => {
+export const TokenView: FC<Props> = ({token}: Props) => {
     const paid = token.paid;
 
     return (

@@ -7,7 +7,7 @@ type Props = {
   type: number;
 }
 
-export const CreateSidebar: FC = ({level, type}: Props) => {
+export const CreateSidebar: FC<Props> = ({level, type}: Props) => {
     return (
         <div className="create-side md:w-1/4 flex flex-col items-end">
             <div className="w-4/5 bg-[#080524] h-full">
