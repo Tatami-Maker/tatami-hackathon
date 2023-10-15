@@ -1,7 +1,4 @@
 import { FC, ReactNode, useEffect, useState } from "react";
-import { SignMessage } from '../../components/SignMessage';
-import { SendTransaction } from '../../components/SendTransaction';
-import { SendVersionedTransaction } from '../../components/SendVersionedTransaction';
 import Image from "next/image";
 import StepUI from "components/StepUI";
 import { CreateSidebar } from "components/CreateSidebar";
@@ -70,7 +67,9 @@ const Launch: FC<Props> = (
           creator: publicKey,
           supply: tokenSupply,
           addresses,
-          members
+          members,
+          type,
+          distribution: allocation
         }),
       })
 

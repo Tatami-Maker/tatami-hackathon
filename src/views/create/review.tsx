@@ -1,12 +1,7 @@
 import { FC, ReactNode } from "react";
-import { SignMessage } from '../../components/SignMessage';
-import { SendTransaction } from '../../components/SendTransaction';
-import { SendVersionedTransaction } from '../../components/SendVersionedTransaction';
-import Image from "next/image";
 import { CreateSidebar } from "components/CreateSidebar";
 
 type Props = {
-    img: any,
     tokenName: string,
     tokenSymbol: string,
     setPage: any,
@@ -14,7 +9,7 @@ type Props = {
     type: number
 }
 
-const Review: FC<Props> = ({img, tokenName, tokenSymbol, tokenSupply, setPage, type}: Props) => {
+const Review: FC<Props> = ({tokenName, tokenSymbol, tokenSupply, setPage, type}: Props) => {
     return (
         <div className="flex flex-col md:flex-row w-full mt-8">
           <div className="hidden md:inline-block z-0 absolute top-[108px] -left-8 w-1/2 h-3/4 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-[#712E4B] via-transparent to-transparent"></div>
@@ -44,14 +39,9 @@ const Review: FC<Props> = ({img, tokenName, tokenSymbol, tokenSupply, setPage, t
                     <h6 className="text-[#9393A9] text-sm">{tokenSymbol ? tokenSymbol : "No Symbol Selected"}</h6>
                 </div>
 
-                <div className="flex flex-row w-full gap-10 items-baseline">
+                <div className="flex flex-row w-full gap-11 items-baseline">
                     <h5 className="mt-4 mb-1 text-sm">Token Supply</h5>
                     <h6 className="text-[#9393A9] text-sm">{tokenSupply ? tokenSupply : "Supply not entered"}</h6>
-                </div>
-
-                <div className="flex flex-row gap-14 items-start">
-                    <h5 className="mt-4 text-sm">Token Logo</h5>
-                    <div><Image src={img ? URL.createObjectURL(img) : ""} width={40} height={40} alt="Image not selected" className="text-xs mt-3"/></div>
                 </div>
               </div>
             </div>

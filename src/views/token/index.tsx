@@ -1,17 +1,37 @@
-import { FC, ReactNode } from "react";
+import { FC, ReactNode, useState } from "react";
 import { SignMessage } from '../../components/SignMessage';
 import { SendTransaction } from '../../components/SendTransaction';
 import { SendVersionedTransaction } from '../../components/SendVersionedTransaction';
 import Image from "next/image";
 import { CreateSidebar } from "components/CreateSidebar";
 import Token, {Tokens} from "../../model/token";
+import ChartUI from "./chart";
+import { presetList, presetPrice } from "views/create";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { useRouter } from "next/router";
+import { notify } from "utils/notifications";
+import PayFee from "./pay";
+import {UpdatePay} from "./update-pay";
+import CreateToken from "./create-token";
 
 type Props = {
     token: Tokens
 }
 
 export const TokenView: FC<Props> = ({token}: Props) => {
-    const paid = token.paid;
+    const {paid, payaddress, type, symbol, name, creator, supply, seq} = token;
+    const { publicKey } = useWallet();
+    const router = useRouter();
+    const [displayMsg, setDisplayMsg] = useState(false);
+    const [img, setImg] = useState<any>();
+
+    if (!publicKey) {
+      notify({ type: 'error', message: `Wallet not connected!` });
+      console.log('error', `Send Transaction: Wallet not connected!`);
+      return;
+    } else if (publicKey.toBase58() !== creator) {
+      router.push("/");
+    }
 
     return (
         <div className="flex flex-col md:flex-row w-full mt-8">
@@ -27,23 +47,38 @@ export const TokenView: FC<Props> = ({token}: Props) => {
             </div>
     
             {/* Token Info */}
-            <div className="bg-primary-focus border-2 border-primary-content rounded-lg w-11/12  md:w-7/12 overflow-hidden">
-              <div className="p-4">
-                <h2 className="text-lg font-semibold">Token Info</h2>
-                <p className="text-sm text-[#9393A9]">Name the token and logo details</p>
-                <hr className='border-[#2C2C5A] border-b-2 my-4'/>
-                <div className="flex flex-row w-full gap-10 items-baseline">
-                  <h5 className="mt-4 mb-1 text-md">Token Name</h5>
-                  <h6 className="text-[#9393A9] text-sm">{token.name}</h6>
+            <div className="p-4 bg-primary-focus border-2 border-primary-content rounded-lg w-11/12 md:w-7/12 overflow-hidden">
+              <h2 className="text-lg font-semibold">Token Info</h2>
+              <p className="text-sm text-[#9393A9]">Name the token and logo details</p>
+              <hr className='border-[#2C2C5A] border-b-2 my-4'/>
+              <div className="flex flex-row ">
+                <div className="p-4">
+                  <div className="flex flex-row w-full gap-10 items-baseline">
+                    <h5 className="mt-4 mb-1 text-md">Token Name</h5>
+                    <h6 className="text-[#9393A9] text-sm">{name}</h6>
+                  </div>
+                  <div className="flex flex-row w-full gap-7 items-baseline">
+                    <h5 className="mt-4 mb-1 text-md">Token Symbol</h5>
+                    <h6 className="text-[#9393A9] text-sm">{symbol}</h6>
+                  </div>
+                  <div className="flex flex-row w-full gap-7 items-baseline">
+                    <h5 className="mt-4 mb-1 text-md">Token Supply</h5>
+                    <h6 className="text-[#9393A9] text-sm">{supply}</h6>
+                  </div>
+                  {/* <div className="flex flex-row gap-12 items-start">
+                    <h5 className="mt-4 text-sm">Token Logo</h5>
+                    <div><Image src="/usdc.png" width={40} height={40} alt="Image not selected" className="text-xs mt-3"/></div>
+                  </div> */}
+                  <h5 className="mt-4 mb-1 text-md">Token Logo</h5>
+                  <p className="text-xs text-[#9393A9] mb-2">.png or .jpg upto 320 KB in size</p>
+      
+                  <input id="file-upload" type="file" accept=".png, .jpg" 
+                    onChange={(e) => {
+                      setImg(e.target.files[0])
+                    }}
+                  />
                 </div>
-                <div className="flex flex-row w-full gap-7 items-baseline">
-                  <h5 className="mt-4 mb-1 text-md">Token Symbol</h5>
-                  <h6 className="text-[#9393A9] text-sm">{token.symbol}</h6>
-                </div>
-                <div className="flex flex-row gap-12 items-start">
-                  <h5 className="mt-4 text-sm">Token Logo</h5>
-                  <div><Image src="/usdc.png" width={40} height={40} alt="Image not selected" className="text-xs mt-3"/></div>
-                </div>
+                <ChartUI allocation={token.distribution} total={supply}/>
               </div>
             </div>
 
@@ -54,7 +89,7 @@ export const TokenView: FC<Props> = ({token}: Props) => {
                 <p className="text-sm text-[#9393A9]">Pay the fees to initiate your token management</p>
                 <hr className='border-[#2C2C5A] border-b-2 my-4'/>
                 <div className="flex flex-row w-full gap-4 items-baseline">
-                  <h5 className="mb-1 text-md">Classic Meme Coin Build</h5>
+                  <h5 className="mb-1 text-md">{presetList[type - 1]}</h5>
                   <h5 className="flex flex-row items-center gap-3 font-thin ">
                   <div><Image src="/solanaSmall.png" alt="solana" width={14} height={14}/></div>
                     2 SOL
@@ -62,10 +97,8 @@ export const TokenView: FC<Props> = ({token}: Props) => {
                 </div>
                 <hr className='border-[#2C2C5A] border-b-2 my-4'/>
                 <div className="flex flex-col md:flex-row">
-                  <div className="inline-block text-sm py-3 px-8 rounded-lg cursor-pointer
-                    bg-gradient-to-b from-[#F3BC51] to-[#936100]">Pay Now</div>
-                  <div className="inline-block text-sm py-3 px-4 rounded-lg cursor-pointer
-                    text-[#9393A9]">Refresh</div>
+                  <PayFee payaddress={payaddress} amount={presetPrice[type-1]} seq={seq} paid={paid}/>
+                  <UpdatePay seq={seq}/>
                 </div>
                 <p className={`${paid ? "text-green-400" : "text-red-400"} text-sm pt-4 pl-1`}>
                   {paid ? "Your payment is confirmed" : "You haven't paid yet!"}
@@ -79,12 +112,17 @@ export const TokenView: FC<Props> = ({token}: Props) => {
                 <h2 className="text-lg font-semibold">Create Token</h2>
                 <p className="text-sm text-[#9393A9]">Click the button below and confirm the transaction to create token</p>
                 <hr className='border-[#2C2C5A] border-b-2 my-4'/>
-                <div className="flex flex-row w-full gap-4 items-baseline">
+                <div className="flex flex-row w-full gap-4 items-baseline relative">
                   <h5 className="mt-2 mb-1 text-md">Create your Token: </h5>
-                  <div className="inline-block text-sm py-3 px-8 rounded-lg cursor-pointer
-                  bg-gradient-to-b from-[#F3BC51] to-[#936100]">Create</div>
+                  <CreateToken seq={seq} symbol={symbol} name={name} supply={supply} paid={paid} img={img} key={img}/>
+                  <p className={`${displayMsg ? "block" : "hidden"} -top-8 absolute bg-slate-500 border-[1px] border-primary-content p-2`}>
+                    The button will only work if the payment is made
+                  </p>
                   <h5 className="border-[1px] border-[#2C2C5A] py-1 px-3 rounded-full 
-                    cursor-pointer hover:bg-slate-400">?</h5>                  
+                    cursor-pointer hover:bg-slate-400" 
+                    onMouseEnter={() => setDisplayMsg(!displayMsg)}
+                    onMouseLeave={() => setDisplayMsg(!displayMsg)}
+                  >?</h5>                  
                 </div>
               </div>
             </div>
@@ -100,10 +138,18 @@ export const TokenView: FC<Props> = ({token}: Props) => {
                   <h5 className="mr-2 text-sm py-2 px-6 rounded-lg border-[1px] border-[#2C2C5A] cursor-pointer">View Team Members</h5>
                 </div>
                 <hr className='border-[#2C2C5A] border-b-2 my-4'/>
-                <div className="flex flex-row w-full gap-4 items-baseline">
+                <div className="flex flex-row w-full gap-4 items-baseline relative">
                   <h5 className="mt-2 mb-1 text-md">Distrubte tokens to team: </h5>
                   <div className="inline-block text-sm py-3 px-8 rounded-lg cursor-pointer
-                  bg-gradient-to-b from-[#F3BC51] to-[#936100]">Distribute</div>                  
+                  bg-gradient-to-b from-[#F3BC51] to-[#936100]">Distribute</div>
+                  <p className={`${displayMsg ? "block" : "hidden"} -top-8 absolute bg-slate-500 border-[1px] border-primary-content p-2`}>
+                    The button will only work if the payment is made
+                  </p>
+                  <h5 className="border-[1px] border-[#2C2C5A] py-1 px-3 rounded-full 
+                    cursor-pointer hover:bg-slate-400" 
+                    onMouseEnter={() => setDisplayMsg(!displayMsg)}
+                    onMouseLeave={() => setDisplayMsg(!displayMsg)}
+                  >?</h5>                  
                 </div>
               </div>
             </div>
@@ -119,10 +165,18 @@ export const TokenView: FC<Props> = ({token}: Props) => {
                   <h5 className="mr-2 text-sm py-2 px-6 rounded-lg border-[1px] border-[#2C2C5A] cursor-pointer">View Participants</h5>
                 </div>
                 <hr className='border-[#2C2C5A] border-b-2 my-4'/>
-                <div className="flex flex-row w-full gap-4 items-baseline">
+                <div className="flex flex-row w-full gap-4 items-baseline relative">
                   <h5 className="mt-2 mb-1 text-md">Initiate airdrop to the participants: </h5>
                   <div className="inline-block text-sm py-3 px-8 rounded-lg cursor-pointer
-                  bg-gradient-to-b from-[#F3BC51] to-[#936100]">Start</div>                  
+                  bg-gradient-to-b from-[#F3BC51] to-[#936100]">Start</div>
+                  <p className={`${displayMsg ? "block" : "hidden"} -top-8 absolute bg-slate-500 border-[1px] border-primary-content p-2`}>
+                    The button will only work if the payment is made
+                  </p>
+                  <h5 className="border-[1px] border-[#2C2C5A] py-1 px-3 rounded-full 
+                    cursor-pointer hover:bg-slate-400" 
+                    onMouseEnter={() => setDisplayMsg(!displayMsg)}
+                    onMouseLeave={() => setDisplayMsg(!displayMsg)}
+                  >?</h5>                  
                 </div>
               </div>
             </div>
@@ -133,10 +187,18 @@ export const TokenView: FC<Props> = ({token}: Props) => {
                 <h2 className="text-lg font-semibold">Governance</h2>
                 <p className="text-sm text-[#9393A9]">Initiate the DAO and deposit the tokens</p>
                 <hr className='border-[#2C2C5A] border-b-2 my-4'/>
-                <div className="flex flex-row w-full gap-4 items-baseline">
+                <div className="flex flex-row w-full gap-4 items-baseline relative">
                   <h5 className="mt-2 mb-1 text-md">Create the DAO for your token: </h5>
                   <div className="inline-block text-sm py-3 px-8 rounded-lg cursor-pointer
-                  bg-gradient-to-b from-[#F3BC51] to-[#936100]">Create</div>                  
+                  bg-gradient-to-b from-[#F3BC51] to-[#936100]">Create</div>    
+                  <p className={`${displayMsg ? "block" : "hidden"} -top-8 absolute bg-slate-500 border-[1px] border-primary-content p-2`}>
+                    The button will only work if the payment is made
+                  </p>
+                  <h5 className="border-[1px] border-[#2C2C5A] py-1 px-3 rounded-full 
+                    cursor-pointer hover:bg-slate-400" 
+                    onMouseEnter={() => setDisplayMsg(!displayMsg)}
+                    onMouseLeave={() => setDisplayMsg(!displayMsg)}
+                  >?</h5>              
                 </div>
               </div>
             </div>

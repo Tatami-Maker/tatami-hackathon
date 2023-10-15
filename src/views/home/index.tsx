@@ -45,7 +45,7 @@ export const HomeView: FC = ({ }) => {
           title='Common Interest DAO'
           desc={["The fixed supply of 100 tokens", "1 allocated to each address",
           "DAO governed by the holders"]}
-          price={3}
+          price={2}
           type={5}
         />
         <PresetBox 
@@ -53,27 +53,27 @@ export const HomeView: FC = ({ }) => {
           desc={["100% allocated to the Team",
           "Team decides the DAO's direction",
           "Team issues further tokens"]}
-          price={3}
+          price={2}
           type={3}
         />
         <PresetBox 
           title='Crowdsource Token'
           desc={["1% Options allocated to Team", "99% Options allocated to AllStars",
           "DAO governed by holders"]}
-          price={3}
+          price={2}
           type={1}
         />
         <PresetBox 
           title='Memecoin'
           desc={["89% allocated to the Allstar list", "10% added in the liquidity pool",
           "1% allocated to the team"]}
-          price={3}
+          price={2}
           type={4}
         />
         <PresetBox 
           title='Your Preset?'
           desc={["Didn't find the suitable preset?", "Create your own tokenomics","coming soon on Tatami"]}
-          price={3}
+          price={2}
           type={6}
         />
         </div>

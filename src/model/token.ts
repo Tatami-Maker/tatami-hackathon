@@ -9,6 +9,9 @@ export interface Tokens extends mongoose.Document {
   addresses: string[]
   members: string[]
   supply: number
+  distribution: number[]
+  type: number
+  payaddress: string
 }
 
 const TokenSchema = new mongoose.Schema<Tokens>({
@@ -42,6 +45,15 @@ const TokenSchema = new mongoose.Schema<Tokens>({
   },
   supply: {
     type: Number
+  },
+  distribution: {
+    type: [Number]
+  },
+  type: {
+    type: Number
+  },
+  payaddress: {
+    type: String
   }
 })
 

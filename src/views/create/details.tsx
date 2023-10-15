@@ -9,7 +9,6 @@ import Link from 'next/link';
 import { presetLink, presetList } from ".";
 
 type Props = {
-    setImage: any,
     setTokenName: any,
     setTokenSymbol: any,
     setPage: any,
@@ -18,7 +17,7 @@ type Props = {
     tokenSupply: number
 }
 
-const TokenDetails: FC<Props> = ({setImage, setTokenName, setTokenSymbol, setTokenSupply, setPage, type, tokenSupply}: Props) => {
+const TokenDetails: FC<Props> = ({setTokenName, setTokenSymbol, setTokenSupply, setPage, type, tokenSupply}: Props) => {
   const router = useRouter();
 
   if (type) {
@@ -90,18 +89,14 @@ const TokenDetails: FC<Props> = ({setImage, setTokenName, setTokenSymbol, setTok
                 <hr className='border-[#2C2C5A] border-b-2 my-4'/>
                 <h5 className="mt-4 mb-1 text-sm">Token Name</h5>
                 <input type="text" placeholder="e.g. Tatami Coin" className="bg-primary-content w-11/12 rounded-md h-10
-                 placeholder:text-sm p-4" onChange={(e) => setTokenName(e.target.value)} />
+                 text-sm p-4" onChange={(e) => setTokenName(e.target.value)} />
                 <h5 className="mt-4 mb-1 text-sm">Token Symbol</h5>
                 <input type="text" placeholder="e.g. TCC" className="bg-primary-content w-1/2 rounded-md h-10
-                 placeholder:text-sm p-4" onChange={e => setTokenSymbol(e.target.value)} />
+                 text-sm p-4" onChange={e => setTokenSymbol(e.target.value)} />
                  <h5 className="mt-4 mb-1 text-sm">Token Supply</h5>
                 <input type="number" placeholder="e.g. 100000" className="bg-primary-content w-1/2 rounded-md h-10
-                 placeholder:text-sm p-4" onChange={e => setTokenSupply(parseInt(e.target.value))} 
+                 text-sm p-4" onChange={e => setTokenSupply(parseInt(e.target.value))} 
                  value={type === 5 ? 100 : tokenSupply}/>
-                <h5 className="mt-4 text-sm">Token Logo</h5>
-                <p className="text-xs text-[#9393A9] mb-2">.png or .jpg upto 320 KB in size</p>
-    
-                <input id="file-upload" type="file" accept=".png, .jpg" onChange={(e) => setImage(e.target.files[0])}/>
               </div>
             </div>
           }

@@ -1,6 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import dbConnect from '../../../lib/dbConnect'
 import Token from '../../../model/token'
+import { PublicKey } from '@solana/web3.js'
+import * as anchor from "@coral-xyz/anchor";
 
 export default async function handler(
   req: NextApiRequest,
@@ -21,6 +23,10 @@ export default async function handler(
     }
 
     updated.paid = false;
+    updated.payaddress = PublicKey.findProgramAddressSync([
+      new anchor.BN(updated.seq).toArrayLike(Buffer, "le", 8),
+      Buffer.from("receipt")
+    ], new PublicKey("BTy2uHY6iynWB9EJDVwasG9pxMf2mpEeMBLS9C8yu3UA"))[0].toBase58();
 
     if (method === "POST") {
       try {
