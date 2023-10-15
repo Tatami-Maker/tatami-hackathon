@@ -10,7 +10,7 @@ type Props = {
 export const CreateSidebar: FC<Props> = ({level, type}: Props) => {
     return (
         <div className="create-side md:w-1/4 flex flex-col items-end">
-            <div className="w-4/5 bg-[#080524] h-full">
+            <div className="w-full md:w-4/5 bg-[#080524] h-full">
               <div className="ml-4">
                 <h5 className="text-[#9393A9] text-sm">PRESET SELECTED</h5>
                 <select name="presets" className="bg-[#040216] text-sm py-2 px-4 w-11/12 lg:w-48

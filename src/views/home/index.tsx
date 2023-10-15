@@ -33,7 +33,7 @@ export const HomeView: FC = ({ }) => {
         <p className="text-center text-slate-400 mt-4 md:mt-0 mb-4">
           The Complete Token Launch Suite
         </p>
-        <div className='grid grid-rows-6 md:grid-rows-3 lg:grid-rows-2 grid-flow-col md:gap-8'>
+        <div className='grid grid-rows-6 md:grid-rows-3 lg:grid-rows-2 grid-flow-col md:gap-8 mb-8'>
         <PresetBox 
           title='Investment DAO'
           desc={["2% alloted to the Team", "98% allocated to DAO treasury",

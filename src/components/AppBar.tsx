@@ -6,6 +6,7 @@ import { useAutoConnect } from '../contexts/AutoConnectProvider';
 import NetworkSwitcher from './NetworkSwitcher';
 import NavElement from './nav-element';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 
 const WalletMultiButtonDynamic = dynamic(
   async () => (await import('@solana/wallet-adapter-react-ui')).WalletMultiButton,
@@ -15,6 +16,8 @@ const WalletMultiButtonDynamic = dynamic(
 export const AppBar: React.FC = () => {
   const { autoConnect, setAutoConnect } = useAutoConnect();
   const [isNavOpen, setIsNavOpen] = useState(false);
+  const router = useRouter();
+  
   return (
     <div>
       {/* NavBar / Header */}
@@ -26,8 +29,10 @@ export const AppBar: React.FC = () => {
               <h1 className='text-2xl font-bold text-white'>Tatami</h1>
             </Link>
           </div>
+          <Image src="/logo.png" alt="logo" width={28} height={28} className="sm:hidden" onClick={() => router.push("/")}/>
+
           <WalletMultiButtonDynamic className="
-            btn-ghost ml-8 relative flex md:hidden px-4 bg-[#1E2043] border-[#2C2C5A] border-2 rounded-md font-normal text-[#b0b0c2] h-9" />
+            btn-ghost ml-3 relative flex md:hidden px-4 bg-[#1E2043] border-[#2C2C5A] border-2 rounded-md font-normal text-[#b0b0c2] h-9" />
           <div className="hidden md:inline-flex align-items-center justify-items gap-12 ml-12">
             <NavElement
               label="Create Token"

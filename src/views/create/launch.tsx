@@ -119,7 +119,7 @@ const Launch: FC<Props> = (
             '#F3BC51'
           ],
           hoverOffset: 4,
-          borderRadius: 12,
+          borderRadius: 6,
           borderWidth: 2,
           borderColor: "rgb(0,0,0,0.0)",
           spacing: 2
