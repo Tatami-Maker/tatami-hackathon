@@ -1,4 +1,4 @@
-import { FC, ReactNode, useState } from "react";
+import { FC, ReactNode, useEffect, useState } from "react";
 import { SignMessage } from '../../components/SignMessage';
 import { SendTransaction } from '../../components/SendTransaction';
 import { SendVersionedTransaction } from '../../components/SendVersionedTransaction';
@@ -7,6 +7,8 @@ import StepUI from "components/StepUI";
 import { CreateSidebar } from "components/CreateSidebar";
 import { useRouter } from "next/router";
 import { notify } from "utils/notifications";
+import Chart from 'chart.js/auto';
+import { presetShare } from ".";
 
 type Props = {
   setAddresses: any;
@@ -27,7 +29,7 @@ const Launch: FC<Props> = (
   const [currentAddress, setCurrentAddress] = useState<string>();
   const [currentMember, setCurrentMember] = useState<string>();
   const [disabledButton, setDisabledButton] = useState(false);
-
+  const [allocation, setAllocation] = useState(presetShare[type-1]);
   const router = useRouter();
   const contentType = 'application/json'
 
@@ -87,6 +89,64 @@ const Launch: FC<Props> = (
       notify({ type: 'error', message: 'error', description: error});
     }
   }
+
+  const updateAllocation = (index: number, val: number) => {
+    const newAlloc = [...allocation];
+    newAlloc[index] = val;
+    setAllocation(newAlloc);
+  }
+
+  // Donut Chart Setup
+  useEffect(() => {    
+    const chartDiv = document.querySelector(".canvas-div");
+    const canvas = document.createElement("canvas");
+    canvas.classList.add('canvas-chart');
+
+    let chart = new Chart(canvas, {
+      type: 'doughnut',
+      data: {
+        labels: [
+          'Team',
+          'Airdrop',
+          'DAO Allocation'
+        ],
+        datasets: [{
+          label: 'Token Distribution',
+          data: allocation,
+          backgroundColor: [
+            '#FF4906',
+            '#19B400',
+            '#F3BC51'
+          ],
+          hoverOffset: 4,
+          borderRadius: 12,
+          borderWidth: 2,
+          borderColor: "rgb(0,0,0,0.0)",
+          spacing: 2
+        }],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'top',
+          },
+          title: {
+            display: false,
+            text: 'Token Distribution'
+          }
+        }
+      },
+    });
+
+    const canvasParent = document.querySelector(".canvas-parent");
+
+    if (document.contains(document.querySelector('.canvas-chart'))) {
+      document.querySelector('.canvas-chart').remove()
+    }
+
+    canvasParent.insertBefore(canvas, chartDiv);
+  }, [allocation]);
 
   return (
       <div className="flex flex-col md:flex-row w-full mt-8">
@@ -163,8 +223,76 @@ const Launch: FC<Props> = (
               }
             </div>
           </div>
-          <div className="mb-16 flex flex-row items-start gap-1 text-[#9393A9]">
 
+          {/*Token Distribution*/}
+          <div className="bg-primary-focus border-2 border-primary-content rounded-lg w-11/12  md:w-7/12 overflow-hidden">
+            <div className="p-4 canvas-parent">
+              <h2 className="text-lg font-semibold">Distribution Amounts</h2>
+              <p className="text-sm text-[#9393A9]">Select who and how much people recieve</p>
+              <hr className='border-[#2C2C5A] border-[1px] my-4'/>
+              <div className="w-96 canvas-div"></div>
+              <div className="flex flex-col items-center mt-5 gap-4">
+                {/* Team */}
+                <div className="flex flex-col lg:flex-row gap-4 items-center lg:items-end">
+                  <div className="flex flex-col">
+                    <h6 className="text-sm">Name</h6>
+                    <input type="text" className="bg-primary-content 
+                      rounded-md h-10 text-sm p-4" value="Team" disabled/>
+                  </div>
+                  <div className="flex flex-col">
+                    <h6 className="text-sm">Amount</h6>
+                    <input type="number" className="bg-primary-content 
+                      rounded-md h-10 text-sm p-4" value={allocation[0]} 
+                      onChange={(e) => updateAllocation(0, parseInt(e.target.value))}/> 
+                  </div>
+                  <h5 className="mr-2 text-sm py-2 px-4 rounded-lg border-[1px] border-[#2C2C5A] cursor-pointer"
+                    >
+                      Delete <Image src="/delete.png" alt="delete" width={14} height={20} className="inline-block ml-2" />
+                    </h5>
+                </div>
+                {/* Airdrop */}
+                <div className="flex flex-col lg:flex-row gap-4 items-center lg:items-end">
+                  <div className="flex flex-col">
+                    <h6 className="text-sm">Name</h6>
+                    <input type="text" className="bg-primary-content 
+                      rounded-md h-10 text-sm p-4" value="Airdrop" disabled/>
+                  </div>
+                  <div className="flex flex-col">
+                    <h6 className="text-sm">Amount</h6>
+                    <input type="number" className="bg-primary-content 
+                      rounded-md h-10 text-sm p-4" value={allocation[1]}
+                      onChange={(e) => updateAllocation(1, parseInt(e.target.value))}/> 
+ 
+                  </div>
+                  <h5 className="mr-2 text-sm py-2 px-4 rounded-lg border-[1px] border-[#2C2C5A] cursor-pointer"
+                    >
+                      Delete <Image src="/delete.png" alt="delete" width={14} height={20} className="inline-block ml-2" />
+                    </h5>
+                </div>
+                {/* DAO Allocation */}
+                <div className="flex flex-col lg:flex-row gap-4 items-center lg:items-end">
+                  <div className="flex flex-col">
+                    <h6 className="text-sm">Name</h6>
+                    <input type="text" className="bg-primary-content 
+                      rounded-md h-10 text-sm p-4" value="DAO Allocation" disabled/>
+                  </div>
+                  <div className="flex flex-col">
+                    <h6 className="text-sm">Amount</h6>
+                    <input type="number" className="bg-primary-content 
+                      rounded-md h-10 text-sm p-4" value={allocation[2]}
+                      onChange={(e) => updateAllocation(2, parseInt(e.target.value))}/>  
+                  </div>
+                  <h5 className="mr-2 text-sm py-2 px-4 rounded-lg border-[1px] border-[#2C2C5A] cursor-pointer"
+                    >
+                      Delete <Image src="/delete.png" alt="delete" width={14} height={20} className="inline-block ml-2" />
+                    </h5>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Sidebar */}
+          <div className="mb-16 flex flex-row items-start gap-1 text-[#9393A9]">
           <div className="border-2 border-[#2C2C5A] text-sm px-8 py-3 bg-[#1E2043] rounded-lg mb-16
           hover:cursor-pointer hover:bg-[#3b3b62] text-[#9393A9]" onClick={confirmToken}>
             Confirm

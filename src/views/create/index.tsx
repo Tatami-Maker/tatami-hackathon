@@ -54,6 +54,16 @@ export const presetList = [
   "Basic Token",
 ]
 
+export const presetShare = [
+  [1,99,0],
+  [2,0,98],
+  [100,0,0],
+  [1,89,10],
+  [0,10,90],
+  [0,0,100],
+  [10,40,50]
+]
+
 export const presetLink = [
   "https://github.com/Tatami-Maker/documentation/blob/main/Crowdsource%20Token.md",
   "https://github.com/Tatami-Maker/documentation/blob/main/Investment%20DAO%20Preset.md",

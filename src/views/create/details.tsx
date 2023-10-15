@@ -95,7 +95,7 @@ const TokenDetails: FC<Props> = ({setImage, setTokenName, setTokenSymbol, setTok
                 <input type="text" placeholder="e.g. TCC" className="bg-primary-content w-1/2 rounded-md h-10
                  placeholder:text-sm p-4" onChange={e => setTokenSymbol(e.target.value)} />
                  <h5 className="mt-4 mb-1 text-sm">Token Supply</h5>
-                <input type="text" placeholder="e.g. 100000" className="bg-primary-content w-1/2 rounded-md h-10
+                <input type="number" placeholder="e.g. 100000" className="bg-primary-content w-1/2 rounded-md h-10
                  placeholder:text-sm p-4" onChange={e => setTokenSupply(parseInt(e.target.value))} 
                  value={type === 5 ? 100 : tokenSupply}/>
                 <h5 className="mt-4 text-sm">Token Logo</h5>

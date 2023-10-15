@@ -68,3 +68,9 @@ input[type="file"]::file-selector-button {
 .icon-fg {
   transform: rotate(-45deg) !important;
 }
+
+.canvas-chart {
+  width: 80% !important;
+  height: 80% !important;
+  margin: auto;
+}
