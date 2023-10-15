@@ -44,6 +44,24 @@ export default async function handler(
                 } catch(error) {
                     res.status(400).json({ success: false })
                 }
+            } else if (req.body.type === "distribution") {
+                try {
+                    const newActions = [...lastToken.actions];
+                    
+                    if (req.body.mode === "team") {
+                        newActions[1] = true;
+                    } else {
+                        newActions[2] = true;
+                    }
+
+                    const updatedToken = await Token.findOneAndUpdate({seq: lastToken.seq}, {
+                        actions: newActions
+                    });
+
+                    res.status(201).json({ success: true, data: updatedToken })
+                } catch(error) {
+                    res.status(400).json({ success: false })
+                }
             }
         
         } catch(e) {

@@ -13,6 +13,7 @@ import { notify } from "utils/notifications";
 import PayFee from "./pay";
 import {UpdatePay} from "./update-pay";
 import CreateToken from "./create-token";
+import Distribute from "./distribute";
 import Link from "next/link";
 
 type Props = {
@@ -20,12 +21,17 @@ type Props = {
 }
 
 export const TokenView: FC<Props> = ({token}: Props) => {
-    const {paid, payaddress, type, symbol, name, creator, supply, seq, mint, actions} = token;
+    const {paid, payaddress, type, symbol, name, creator, supply, 
+      seq, mint, actions, addresses, members, distribution} = token;
     const { publicKey } = useWallet();
     const router = useRouter();
     const [displayMsg, setDisplayMsg] = useState(false);
     const [img, setImg] = useState<any>();
     const [showToken, setShowToken] = useState(false);
+    const [showTeam, setShowTeam] = useState(false);
+    const [showAirdrop, setShowAirdrop] = useState(false);
+
+    const allocTotal = distribution.reduce((a,b) => a + b);
 
     if (!publicKey) {
       notify({ type: 'error', message: `Wallet not connected!` });
@@ -80,7 +86,7 @@ export const TokenView: FC<Props> = ({token}: Props) => {
                     }}
                   />
                 </div>
-                <ChartUI allocation={token.distribution} total={supply}/>
+                <ChartUI allocation={distribution} total={supply}/>
               </div>
             </div>
 
@@ -150,13 +156,14 @@ export const TokenView: FC<Props> = ({token}: Props) => {
                     <h2 className="text-lg font-semibold">Team Management</h2>
                     <p className="text-sm text-[#9393A9]">Distribute tokens to the team members</p>
                   </div>
-                  <h5 className="mr-2 text-sm py-2 px-6 rounded-lg border-[1px] border-[#2C2C5A] cursor-pointer">View Team Members</h5>
+                  <h5 className="mr-2 text-sm py-2 px-6 rounded-lg border-[1px]
+                   border-[#2C2C5A] cursor-pointer" onClick={() => setShowTeam(true)}>View Team Members</h5>
                 </div>
                 <hr className='border-[#2C2C5A] border-b-2 my-4'/>
                 <div className="flex flex-row w-full gap-4 items-baseline relative">
                   <h5 className="mt-2 mb-1 text-md">Distrubte tokens to team: </h5>
-                  <div className="inline-block text-sm py-3 px-8 rounded-lg cursor-pointer
-                  bg-gradient-to-b from-[#F3BC51] to-[#936100]">Distribute</div>
+                  <Distribute addresses={members} supply={Math.floor(distribution[0]/allocTotal*supply)} 
+                    mode="team" seq={seq} paid={paid} disabled={actions[1]} mint={mint}/>
                   <p className={`${displayMsg ? "block" : "hidden"} -top-8 absolute bg-slate-500 border-[1px] border-primary-content p-2`}>
                     The button will only work if the payment is made
                   </p>
@@ -165,6 +172,16 @@ export const TokenView: FC<Props> = ({token}: Props) => {
                     onMouseEnter={() => setDisplayMsg(!displayMsg)}
                     onMouseLeave={() => setDisplayMsg(!displayMsg)}
                   >?</h5>                  
+                </div>
+                <div className={`${showTeam ? "block" : "hidden"} mt-4`}>
+                  {
+                  members.map((address, index) => (
+                    <div className="flex flex-col lg:flex-row gap-6 items-center mb-2" key={index}>
+                      <div className="ml-2 text-sm">{index+1}. {address}</div>
+                      {actions[1] ? <p className="text-green-400">SENT</p> : ""}
+                    </div>
+                  ))
+                  }
                 </div>
               </div>
             </div>
@@ -177,13 +194,14 @@ export const TokenView: FC<Props> = ({token}: Props) => {
                     <h2 className="text-lg font-semibold">Airdrop</h2>
                     <p className="text-sm text-[#9393A9]">Distribute tokens to the users</p>
                   </div>
-                  <h5 className="mr-2 text-sm py-2 px-6 rounded-lg border-[1px] border-[#2C2C5A] cursor-pointer">View Participants</h5>
+                  <h5 className="mr-2 text-sm py-2 px-6 rounded-lg border-[1px]
+                   border-[#2C2C5A] cursor-pointer" onClick={() => setShowAirdrop(true)}>View Participants</h5>
                 </div>
                 <hr className='border-[#2C2C5A] border-b-2 my-4'/>
                 <div className="flex flex-row w-full gap-4 items-baseline relative">
                   <h5 className="mt-2 mb-1 text-md">Initiate airdrop to the participants: </h5>
-                  <div className="inline-block text-sm py-3 px-8 rounded-lg cursor-pointer
-                  bg-gradient-to-b from-[#F3BC51] to-[#936100]">Start</div>
+                  <Distribute addresses={addresses} supply={Math.floor(distribution[1]/allocTotal*supply)} 
+                    mode="airdrop" seq={seq} paid={paid} disabled={actions[2]} mint={mint}/>
                   <p className={`${displayMsg ? "block" : "hidden"} -top-8 absolute bg-slate-500 border-[1px] border-primary-content p-2`}>
                     The button will only work if the payment is made
                   </p>
@@ -192,6 +210,16 @@ export const TokenView: FC<Props> = ({token}: Props) => {
                     onMouseEnter={() => setDisplayMsg(!displayMsg)}
                     onMouseLeave={() => setDisplayMsg(!displayMsg)}
                   >?</h5>                  
+                </div>
+                <div className={`${showAirdrop ? "block" : "hidden"} mt-4`}>
+                  {
+                  addresses.map((address, index) => (
+                    <div className="flex flex-col lg:flex-row gap-6 items-center mb-2" key={index}>
+                      <div className="ml-2 text-sm">{index+1}. {address}</div>
+                      {actions[2] ? <p className="text-green-400">SENT</p> : ""}
+                    </div>
+                  ))
+                  }
                 </div>
               </div>
             </div>
@@ -222,7 +250,7 @@ export const TokenView: FC<Props> = ({token}: Props) => {
             <div className="bg-primary-focus border-2 border-primary-content rounded-lg w-11/12  md:w-7/12 overflow-hidden">
               <div className="p-4">
                 <h2 className="text-lg font-semibold">Options</h2>
-                <p className="text-sm text-[#9393A9]">Dual Option powered Options for your token</p>
+                <p className="text-sm text-[#9393A9]">Dual Finance powered Options for your token</p>
                 <hr className='border-[#2C2C5A] border-b-2 my-4'/>
                 <div className="flex flex-row w-full gap-4 items-baseline">
                   <h5 className="mt-2 mb-1 text-md">coming soon...</h5>

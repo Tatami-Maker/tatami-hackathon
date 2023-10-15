@@ -1,6 +1,6 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { Keypair, LAMPORTS_PER_SOL, PublicKey, SystemProgram,
-    VersionedTransaction, Transaction, TransactionMessage, TransactionSignature, SYSVAR_RENT_PUBKEY } from '@solana/web3.js';
+    VersionedTransaction, TransactionMessage, TransactionSignature, SYSVAR_RENT_PUBKEY } from '@solana/web3.js';
 import { useRouter } from 'next/router';
 import { FC, useCallback, useState } from 'react';
 import { notify } from "../../utils/notifications";

@@ -239,7 +239,7 @@ const Launch: FC<Props> = (
                       rounded-md h-10 text-sm p-4" value="Team" disabled/>
                   </div>
                   <div className="flex flex-col">
-                    <h6 className="text-sm">Amount</h6>
+                    <h6 className="text-sm">Percentage</h6>
                     <input type="number" className="bg-primary-content 
                       rounded-md h-10 text-sm p-4" value={allocation[0]} 
                       onChange={(e) => updateAllocation(0, parseInt(e.target.value))}/> 
@@ -257,7 +257,7 @@ const Launch: FC<Props> = (
                       rounded-md h-10 text-sm p-4" value="Airdrop" disabled/>
                   </div>
                   <div className="flex flex-col">
-                    <h6 className="text-sm">Amount</h6>
+                    <h6 className="text-sm">Percentage</h6>
                     <input type="number" className="bg-primary-content 
                       rounded-md h-10 text-sm p-4" value={allocation[1]}
                       onChange={(e) => updateAllocation(1, parseInt(e.target.value))}/> 
@@ -276,7 +276,7 @@ const Launch: FC<Props> = (
                       rounded-md h-10 text-sm p-4" value="DAO Allocation" disabled/>
                   </div>
                   <div className="flex flex-col">
-                    <h6 className="text-sm">Amount</h6>
+                    <h6 className="text-sm">Percentage</h6>
                     <input type="number" className="bg-primary-content 
                       rounded-md h-10 text-sm p-4" value={allocation[2]}
                       onChange={(e) => updateAllocation(2, parseInt(e.target.value))}/>  
