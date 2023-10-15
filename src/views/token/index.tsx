@@ -13,17 +13,19 @@ import { notify } from "utils/notifications";
 import PayFee from "./pay";
 import {UpdatePay} from "./update-pay";
 import CreateToken from "./create-token";
+import Link from "next/link";
 
 type Props = {
     token: Tokens
 }
 
 export const TokenView: FC<Props> = ({token}: Props) => {
-    const {paid, payaddress, type, symbol, name, creator, supply, seq} = token;
+    const {paid, payaddress, type, symbol, name, creator, supply, seq, mint, actions} = token;
     const { publicKey } = useWallet();
     const router = useRouter();
     const [displayMsg, setDisplayMsg] = useState(false);
     const [img, setImg] = useState<any>();
+    const [showToken, setShowToken] = useState(false);
 
     if (!publicKey) {
       notify({ type: 'error', message: `Wallet not connected!` });
@@ -109,12 +111,18 @@ export const TokenView: FC<Props> = ({token}: Props) => {
             {/* Create Token */}
             <div className="bg-primary-focus border-2 border-primary-content rounded-lg w-11/12  md:w-7/12 overflow-hidden">
               <div className="p-4">
-                <h2 className="text-lg font-semibold">Create Token</h2>
-                <p className="text-sm text-[#9393A9]">Click the button below and confirm the transaction to create token</p>
+                <div className="flex flex-col md:flex-row w-full justify-between items-center gap-4 md:gap-0">
+                  <div className="text-center md:text-left">
+                    <h2 className="text-lg font-semibold">Create Token</h2>
+                    <p className="text-sm text-[#9393A9]">Click the button below and confirm the transaction to create token</p>
+                  </div>
+                  <h5 className={`${actions[0] ? "block" : "hidden"} mr-2 text-sm py-2 px-6 rounded-lg 
+                  border-[1px] border-[#2C2C5A] cursor-pointer`} onClick={() => setShowToken(true)}>View Token</h5>
+                </div>
                 <hr className='border-[#2C2C5A] border-b-2 my-4'/>
                 <div className="flex flex-row w-full gap-4 items-baseline relative">
                   <h5 className="mt-2 mb-1 text-md">Create your Token: </h5>
-                  <CreateToken seq={seq} symbol={symbol} name={name} supply={supply} paid={paid} img={img} key={img}/>
+                  <CreateToken seq={seq} symbol={symbol} name={name} supply={supply} paid={paid} img={img} key={img} disabled={actions[0]}/>
                   <p className={`${displayMsg ? "block" : "hidden"} -top-8 absolute bg-slate-500 border-[1px] border-primary-content p-2`}>
                     The button will only work if the payment is made
                   </p>
@@ -124,14 +132,21 @@ export const TokenView: FC<Props> = ({token}: Props) => {
                     onMouseLeave={() => setDisplayMsg(!displayMsg)}
                   >?</h5>                  
                 </div>
+                <div className={`${showToken ? "block" : "hidden"} mt-4`}>
+                    Token created:
+                    <Link href={`https://solscan.io/account/${mint}?cluster=devnet`} className="ml-3 text-secondary"
+                    target="_blank" rel="noopener noreferrer" passHref>
+                      Mint Account
+                    </Link>
+                </div>
               </div>
             </div>
 
             {/* Distribute Tokens to Team Members */}
             <div className="bg-primary-focus border-2 border-primary-content rounded-lg w-11/12  md:w-7/12 overflow-hidden">
               <div className="p-4">
-                <div className="flex flex-col md:flex-row w-full justify-between items-center">
-                  <div>
+                <div className="flex flex-col md:flex-row w-full justify-between items-center gap-4 md:gap-0">
+                  <div className="text-center md:text-left">
                     <h2 className="text-lg font-semibold">Team Management</h2>
                     <p className="text-sm text-[#9393A9]">Distribute tokens to the team members</p>
                   </div>
@@ -157,8 +172,8 @@ export const TokenView: FC<Props> = ({token}: Props) => {
             {/* Airdrop Tokens */}
             <div className="bg-primary-focus border-2 border-primary-content rounded-lg w-11/12  md:w-7/12 overflow-hidden">
               <div className="p-4">
-                <div className="flex flex-col md:flex-row w-full justify-between items-center">
-                  <div>
+                <div className="flex flex-col md:flex-row w-full justify-between items-center gap-4 md:gap-0">
+                  <div className="text-center md:text-left">
                     <h2 className="text-lg font-semibold">Airdrop</h2>
                     <p className="text-sm text-[#9393A9]">Distribute tokens to the users</p>
                   </div>

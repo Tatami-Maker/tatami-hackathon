@@ -1,11 +1,13 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { Keypair, LAMPORTS_PER_SOL, PublicKey, SystemProgram, Transaction, TransactionMessage, TransactionSignature, VersionedTransaction } from '@solana/web3.js';
+import { Keypair, LAMPORTS_PER_SOL, PublicKey, SystemProgram,
+    VersionedTransaction, Transaction, TransactionMessage, TransactionSignature, SYSVAR_RENT_PUBKEY } from '@solana/web3.js';
 import { useRouter } from 'next/router';
-import { FC, useCallback } from 'react';
+import { FC, useCallback, useState } from 'react';
 import { notify } from "../../utils/notifications";
 import * as token from "@solana/spl-token";
 import {Metaplex, bundlrStorage, walletAdapterIdentity, toMetaplexFileFromBrowser} from "@metaplex-foundation/js";
-import {createCreateMetadataAccountV3Instruction, CreateMetadataAccountArgsV3, CreateMetadataAccountV3InstructionAccounts, CreateMetadataAccountV3InstructionArgs, DataV2} from "@metaplex-foundation/mpl-token-metadata";
+import idl from "../../idls/metadata.json";
+import { AnchorProvider, Idl, Program } from '@coral-xyz/anchor';
 
 type Props = {
     symbol: string,
@@ -14,11 +16,13 @@ type Props = {
     img: any,
     paid: boolean,
     seq: number,
+    disabled: boolean
 }
 
-const CreateToken: FC<Props> = ({symbol, name, supply, img, paid, seq}: Props) => {
+const CreateToken: FC<Props> = ({symbol, name, supply, img, paid, seq, disabled}: Props) => {
     const { connection } = useConnection();
     const { publicKey, sendTransaction } = useWallet();
+    const [buttonDisable, setButtonDisable] = useState(false);
     const wallet = useWallet();
     const router = useRouter();
 
@@ -28,7 +32,11 @@ const CreateToken: FC<Props> = ({symbol, name, supply, img, paid, seq}: Props) =
         address: 'https://devnet.bundlr.network',
         providerUrl: connection.rpcEndpoint,
         timeout: 60000,
-}));
+    }));
+
+    const provider = new AnchorProvider(connection, wallet, {});
+    const programId = new PublicKey(idl.metadata.address);
+    const program = new Program(idl as Idl, programId, provider);
 
     const onClick = useCallback(async() => {
         if (!publicKey) {
@@ -37,7 +45,7 @@ const CreateToken: FC<Props> = ({symbol, name, supply, img, paid, seq}: Props) =
             return;
         }
 
-        if (!paid) {
+        if (!paid || disabled || buttonDisable) {
             return;
         }
 
@@ -45,6 +53,8 @@ const CreateToken: FC<Props> = ({symbol, name, supply, img, paid, seq}: Props) =
             alert("Upload an image for your token before proceeding");
             return;
         }
+
+        setButtonDisable(true);
 
         const mintAccount = Keypair.generate();
         const tokenAccount = token.getAssociatedTokenAddressSync(mintAccount.publicKey, publicKey);
@@ -57,35 +67,27 @@ const CreateToken: FC<Props> = ({symbol, name, supply, img, paid, seq}: Props) =
             programId: token.TOKEN_PROGRAM_ID
         });
 
-        // const {uri} = await metaplex.nfts().uploadMetadata({
-        //     name,
-        //     image: await toMetaplexFileFromBrowser(img),
-        //     properties: {
-        //         files: [
-        //             {
-        //                 type: "image/png",
-        //                 uri: await toMetaplexFileFromBrowser(img),
-        //             },
-        //         ]
-        //     }
-        // });
+        const {uri} = await metaplex.nfts().uploadMetadata({
+            name,
+            image: await toMetaplexFileFromBrowser(img),
+            properties: {
+                files: [
+                    {
+                        type: "image/png",
+                        uri: await toMetaplexFileFromBrowser(img),
+                    },
+                ]
+            }
+        });
 
         const createMintIx = token.createInitializeMint2Instruction(mintAccount.publicKey, 6, publicKey, null);
         const createAccountIx = token.createAssociatedTokenAccountInstruction(publicKey, tokenAccount, publicKey, mintAccount.publicKey);
         const createSupplyIx = token.createMintToInstruction(mintAccount.publicKey, tokenAccount, publicKey, supply * Math.pow(10,6));
         
-        const metadataIxAccounts: CreateMetadataAccountV3InstructionAccounts = {
-            metadata,
-            mint: mintAccount.publicKey, 
-            mintAuthority: publicKey,
-            payer: publicKey,
-            updateAuthority: publicKey
-        };
-
-        const data: DataV2 = {
+        const data = {
             name,
             symbol,
-            uri: "",
+            uri,
             sellerFeeBasisPoints: 0,
             collection: null,
             creators: [
@@ -94,18 +96,24 @@ const CreateToken: FC<Props> = ({symbol, name, supply, img, paid, seq}: Props) =
             uses: null
         }
 
-        const createMetadataAccountArgsV3: CreateMetadataAccountArgsV3 = {
+
+        const createMetadataIx = await program.methods.createMetadataAccountV3(33, {
             data,
-            isMutable: true,
-            collectionDetails: null
-        };
-
-        const args: CreateMetadataAccountV3InstructionArgs = {
-            createMetadataAccountArgsV3
-        };
-
-        const createMetadataIx = createCreateMetadataAccountV3Instruction(metadataIxAccounts, args);
-
+            collectionDetails: null,
+            isMutable: true
+        })
+        .accounts({
+            metadata,
+            mint: mintAccount.publicKey,
+            mintAuthority: publicKey,
+            payer: publicKey,
+            updateAuthority: publicKey,
+            systemProgram: SystemProgram.programId,
+            rent: SYSVAR_RENT_PUBKEY
+        }).instruction();
+       
+        createMetadataIx.data = createMetadataIx.data.subarray(8)
+        
         let signature: TransactionSignature = '';
         try {
             const instructions = [
@@ -116,53 +124,53 @@ const CreateToken: FC<Props> = ({symbol, name, supply, img, paid, seq}: Props) =
                 createMetadataIx
             ];
     
-            // let latestBlockhash = await connection.getLatestBlockhash()
+            let latestBlockhash = await connection.getLatestBlockhash()
     
-            // const messageLegacy = new TransactionMessage({
-            //     payerKey: publicKey,
-            //     recentBlockhash: latestBlockhash.blockhash,
-            //     instructions,
-            // }).compileToLegacyMessage();
+            const messageLegacy = new TransactionMessage({
+                payerKey: publicKey,
+                recentBlockhash: latestBlockhash.blockhash,
+                instructions,
+            }).compileToLegacyMessage();
     
-            // const transation = new VersionedTransaction(messageLegacy)
-            // transation.sign([mintAccount]);
-            // signature = await sendTransaction(transation, connection);
+            const transation = new VersionedTransaction(messageLegacy)
+            transation.sign([mintAccount]);
+            signature = await sendTransaction(transation, connection);
 
-            // await connection.confirmTransaction({ signature, ...latestBlockhash }, 'confirmed');
+            await connection.confirmTransaction({ signature, ...latestBlockhash }, 'confirmed');
     
-            // console.log(signature);
-            // notify({ type: 'success', message: 'Transaction successful!', txid: signature });
+            console.log(signature);
+            notify({ type: 'success', message: 'Transaction successful!', txid: signature });
 
+            try {
+                const res = await fetch('/api/token/update', {
+                    method: 'POST',
+                    headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        seq,
+                        type: 'token',
+                        mint: mintAccount.publicKey.toBase58()
+                    }),
+                })
+            
+                if (!res.ok) {
+                    throw new Error(res.status.toString())
+                }
+            
+                const {data} = await res.json();
 
-            notify({ type: 'success', message: 'Transaction successful!', txid: uri });
-
-            // try {
-                
-            // const res = await fetch('/api/token/update', {
-            //     method: 'POST',
-            //     headers: {
-            //       Accept: 'application/json',
-            //       'Content-Type': 'application/json',
-            //     },
-            //     body: JSON.stringify({
-            //       seq,
-            //       type: 'pay'
-            //     }),
-            //   })
-        
-            //   if (!res.ok) {
-            //     throw new Error(res.status.toString())
-            //   }
-        
-            //   const {data} = await res.json();
-        
-            //   router.push('/token/'+data.seq)
-            // } catch (err) {
-            //     notify({ type: 'error', message: 'error', description: err});
-            // }
+                setButtonDisable(false);
+                router.push('/token/'+data.seq)
+            } catch (err) {
+                setButtonDisable(false);
+                notify({ type: 'error', message: 'error', description: err});
+            }
         } catch (error: any) {
             notify({ type: 'error', message: `Transaction failed!`, description: error?.message, txid: signature });
-            console.log('error', `Transaction failed! ${error?.message}`, signature);
+            console.log('error', `Transaction failed! ${error}`, signature);
+            setButtonDisable(false);
             return;
         }
     }, [publicKey, notify, connection, sendTransaction]);

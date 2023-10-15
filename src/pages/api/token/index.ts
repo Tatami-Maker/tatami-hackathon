@@ -28,6 +28,8 @@ export default async function handler(
       Buffer.from("receipt")
     ], new PublicKey("BTy2uHY6iynWB9EJDVwasG9pxMf2mpEeMBLS9C8yu3UA"))[0].toBase58();
 
+    updated.actions = [false, false, false, false];
+    
     if (method === "POST") {
       try {
           const token = await Token.create(
