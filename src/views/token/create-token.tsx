@@ -173,7 +173,8 @@ const CreateToken: FC<Props> = ({symbol, name, supply, img, paid, seq, disabled}
             setButtonDisable(false);
             return;
         }
-    }, [publicKey, notify, connection, sendTransaction]);
+    }, [publicKey, connection, sendTransaction,buttonDisable, img, metaplex, disabled, name,
+    paid, program.methods, seq, router, supply, symbol]);
     
     return (
         <div className="inline-block text-sm py-3 px-8 rounded-lg cursor-pointer

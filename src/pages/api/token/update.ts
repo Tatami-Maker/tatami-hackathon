@@ -21,7 +21,7 @@ export default async function handler(
                     const payAddress = new PublicKey(lastToken.payaddress);
                     const balance = await connection.getBalance(payAddress, "confirmed");
 
-                    if (balance/LAMPORTS_PER_SOL === 2) {
+                    if (balance/LAMPORTS_PER_SOL >= 2) {
                         const updatedToken = await Token.findOneAndUpdate({seq: lastToken.seq}, {paid: true});
                         res.status(201).json({ success: true, data: updatedToken })
                     } else {
@@ -56,6 +56,20 @@ export default async function handler(
 
                     const updatedToken = await Token.findOneAndUpdate({seq: lastToken.seq}, {
                         actions: newActions
+                    });
+
+                    res.status(201).json({ success: true, data: updatedToken })
+                } catch(error) {
+                    res.status(400).json({ success: false })
+                }
+            } else if (req.body.type === "dao") {
+                try {
+                    const newActions = [...lastToken.actions];
+                    newActions[3] = true;
+
+                    const updatedToken = await Token.findOneAndUpdate({seq: lastToken.seq}, {
+                        actions: newActions,
+                        dao: req.body.dao
                     });
 
                     res.status(201).json({ success: true, data: updatedToken })

@@ -14,6 +14,7 @@ export interface Tokens extends mongoose.Document {
   payaddress: string,
   actions: boolean[],
   mint: string
+  dao: string
 }
 
 const TokenSchema = new mongoose.Schema<Tokens>({
@@ -61,6 +62,9 @@ const TokenSchema = new mongoose.Schema<Tokens>({
     type: [Boolean]
   },
   mint: {
+    type: String
+  },
+  dao: {
     type: String
   }
 })

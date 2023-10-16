@@ -15,6 +15,7 @@ import {UpdatePay} from "./update-pay";
 import CreateToken from "./create-token";
 import Distribute from "./distribute";
 import Link from "next/link";
+import Governance from "./governance";
 
 type Props = {
     token: Tokens
@@ -22,7 +23,7 @@ type Props = {
 
 export const TokenView: FC<Props> = ({token}: Props) => {
     const {paid, payaddress, type, symbol, name, creator, supply, 
-      seq, mint, actions, addresses, members, distribution} = token;
+      seq, mint, actions, addresses, members, distribution, dao} = token;
     const { publicKey } = useWallet();
     const router = useRouter();
     const [displayMsg, setDisplayMsg] = useState(false);
@@ -30,7 +31,8 @@ export const TokenView: FC<Props> = ({token}: Props) => {
     const [showToken, setShowToken] = useState(false);
     const [showTeam, setShowTeam] = useState(false);
     const [showAirdrop, setShowAirdrop] = useState(false);
-
+    const [showDao, setShowDao] = useState(false);
+    
     const allocTotal = distribution.reduce((a,b) => a + b);
 
     if (!publicKey) {
@@ -227,13 +229,19 @@ export const TokenView: FC<Props> = ({token}: Props) => {
             {/* Governance */}
             <div className="bg-primary-focus border-2 border-primary-content rounded-lg w-11/12  md:w-7/12 overflow-hidden">
               <div className="p-4">
-                <h2 className="text-lg font-semibold">Governance</h2>
-                <p className="text-sm text-[#9393A9]">Initiate the DAO and deposit the tokens</p>
+                <div className="flex flex-col md:flex-row w-full justify-between items-center gap-4 md:gap-0">
+                  <div className="text-center md:text-left">
+                    <h2 className="text-lg font-semibold">Governance</h2>
+                    <p className="text-sm text-[#9393A9]">Initiate the DAO and deposit the tokens</p>
+                  </div>
+                  <h5 className={`${actions[3] ? "block" : "hidden"} mr-2 text-sm py-2 px-6 rounded-lg 
+                  border-[1px] border-[#2C2C5A] cursor-pointer`} onClick={() => setShowDao(true)}>View DAO Account</h5>
+                </div>
                 <hr className='border-[#2C2C5A] border-b-2 my-4'/>
                 <div className="flex flex-row w-full gap-4 items-baseline relative">
                   <h5 className="mt-2 mb-1 text-md">Create the DAO for your token: </h5>
-                  <div className="inline-block text-sm py-3 px-8 rounded-lg cursor-pointer
-                  bg-gradient-to-b from-[#F3BC51] to-[#936100]">Create</div>    
+                  <Governance name={name} supply={Math.floor(distribution[2]/allocTotal*supply)}  
+                  paid={paid} seq={seq} disabled={actions[3]} mint={mint} />
                   <p className={`${displayMsg ? "block" : "hidden"} -top-8 absolute bg-slate-500 border-[1px] border-primary-content p-2`}>
                     The button will only work if the payment is made
                   </p>
@@ -241,8 +249,15 @@ export const TokenView: FC<Props> = ({token}: Props) => {
                     cursor-pointer hover:bg-slate-400" 
                     onMouseEnter={() => setDisplayMsg(!displayMsg)}
                     onMouseLeave={() => setDisplayMsg(!displayMsg)}
-                  >?</h5>              
+                  >?</h5>         
                 </div>
+                <div className={`${showDao ? "block" : "hidden"} mt-4`}>
+                    Governance created:
+                    <Link href={`https://solscan.io/account/${dao}?cluster=devnet`} className="ml-3 text-secondary"
+                    target="_blank" rel="noopener noreferrer" passHref>
+                      DAO Account
+                    </Link>
+                </div>     
               </div>
             </div>
 
