@@ -25,7 +25,7 @@ export default async function handler(
     updated.paid = false;
     updated.payaddress = PublicKey.findProgramAddressSync([
       new anchor.BN(updated.seq).toArrayLike(Buffer, "le", 8),
-      Buffer.from("receipt")
+      Buffer.from("receipt-address")
     ], new PublicKey("BTy2uHY6iynWB9EJDVwasG9pxMf2mpEeMBLS9C8yu3UA"))[0].toBase58();
 
     updated.actions = [false, false, false, false];

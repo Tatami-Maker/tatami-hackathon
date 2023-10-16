@@ -37,7 +37,7 @@ export const ContentContainer: React.FC<Props> = ({ children }) => {
             <li>
             <NavElement
               label="Learn"
-              href="/"
+              href="https://github.com/Tatami-Maker/documentation"
             />
             </li>
         </ul>

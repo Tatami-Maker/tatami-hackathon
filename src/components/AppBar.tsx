@@ -44,7 +44,7 @@ export const AppBar: React.FC = () => {
             />
             <NavElement
               label="Learn"
-              href="/"
+              href="https://github.com/Tatami-Maker/documentation"
             />
         </div>
         </div>
