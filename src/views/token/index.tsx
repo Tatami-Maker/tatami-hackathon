@@ -253,7 +253,7 @@ export const TokenView: FC<Props> = ({token}: Props) => {
                 </div>
                 <div className={`${showDao ? "block" : "hidden"} mt-4`}>
                     Governance created:
-                    <Link href={`https://solscan.io/account/${dao}?cluster=devnet`} className="ml-3 text-secondary"
+                    <Link href={`https://app.realms.today/dao/${dao}?cluster=devnet`} className="ml-3 text-secondary"
                     target="_blank" rel="noopener noreferrer" passHref>
                       DAO Account
                     </Link>
