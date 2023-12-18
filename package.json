@@ -30,7 +30,7 @@
     "@tailwindcss/typography": "^0.5.9",
     "chart.js": "^4.4.0",
     "daisyui": "^1.24.3",
-    "date-fns": "^2.29.3",
+    "date-fns": "^3.0.0",
     "immer": "^9.0.12",
     "mongoose": "^7.6.2",
     "next": "^13.1.5",
