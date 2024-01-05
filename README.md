@@ -1,3 +1,5 @@
+@deprecated - The newer version available in the [Tatami]("https://github.com/Tatami-Maker/tatami") repo.
+
 # Tatami - Token Launch Suite
 **Website - https://www.tatami.so/**
 
